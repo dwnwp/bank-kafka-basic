@@ -1,0 +1,8 @@
+mongodb:
+  MONGO_DB_USERNAME: "admin"
+  MONGO_DB_PASSWORD: "secret"
+
+kafka:
+  servers:
+    - localhost:9092
+  group: accountConsumer
