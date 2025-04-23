@@ -6,3 +6,8 @@ kafka:
   servers:
     - localhost:9092
   group: accountConsumer
+  groupline: linenoti
+
+line:
+  LINE_CHANNEL_SECRET: ""
+  LINE_CHANNEL_TOKEN: ""

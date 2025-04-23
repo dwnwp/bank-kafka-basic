@@ -5,6 +5,7 @@ go 1.23.4
 require (
 	github.com/IBM/sarama v1.45.1
 	github.com/gin-gonic/gin v1.10.0
+	github.com/line/line-bot-sdk-go/v8 v8.13.0
 	github.com/spf13/viper v1.20.1
 	go.mongodb.org/mongo-driver/v2 v2.2.0
 )
