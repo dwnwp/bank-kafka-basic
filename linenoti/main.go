@@ -32,32 +32,22 @@ func main() {
 		log.Fatal(err)
 	}
 
-	r := gin.Default()
-	port := "8081"
-	r.GET("/healthcheck", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "healthy",
-			"code":    200,
-		})
-	})
-	r.POST("/linebot", app.HandleEvents)
+	brokers := viper.GetStringSlice("kafka.servers")
+	groupID := viper.GetString("kafka.groupline")
+	topics := events.Topics
+
+	config := sarama.NewConfig()
+	config.Version = sarama.V2_5_0_0
+	config.Consumer.Return.Errors = true
+	consumer := services.NewConsumer(app)
+
+	client, err := sarama.NewConsumerGroup(brokers, groupID, config)
+	if err != nil {
+		log.Fatalf("Failed to create consumer group: %v", err)
+	}
+	defer client.Close()
 
 	go func() {
-		brokers := viper.GetStringSlice("kafka.servers")
-		groupID := viper.GetString("kafka.groupline")
-		topics := events.Topics
-	
-		config := sarama.NewConfig()
-		config.Version = sarama.V2_5_0_0
-		config.Consumer.Return.Errors = true
-		consumer := services.NewConsumer(app)
-		
-		client, err := sarama.NewConsumerGroup(brokers, groupID, config)
-		if err != nil {
-			log.Fatalf("Failed to create consumer group: %v", err)
-		}
-		defer client.Close()
-	
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		for {
@@ -69,6 +59,16 @@ func main() {
 			}
 		}
 	}()
+
+	r := gin.Default()
+	port := "8081"
+	r.GET("/healthcheck", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "healthy",
+			"code":    200,
+		})
+	})
+	r.POST("/linebot", app.HandleEvents)
 
 	if err := r.Run(":" + port); err != nil {
 		log.Fatal(err)

@@ -11,9 +11,7 @@ import (
 )
 
 func ConnectDatabase() *mongo.Client {
-	// MongoDb connection string
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-
+	
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("configs")
@@ -22,16 +20,19 @@ func ConnectDatabase() *mongo.Client {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
+	connString := viper.GetString("mongodb.CONN_STRING")
 	username := viper.GetString("mongodb.MONGO_DB_USERNAME")
 	password := viper.GetString("mongodb.MONGO_DB_PASSWORD")
 
+	// MongoDb connection string
+	clientOptions := options.Client().ApplyURI(connString)
 	// setting auth credentials
 	clientOptions.SetAuth(options.Credential{
 		Username: username,
 		Password: password,
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	client, err := mongo.Connect(clientOptions)
