@@ -1,4 +1,5 @@
 mongodb:
+  CONN_STRING: "mongodb://localhost:27017"
   MONGO_DB_USERNAME: "admin"
   MONGO_DB_PASSWORD: "secret"
 

@@ -47,8 +47,6 @@ func (obj accountRepository) Update(bankAccount BankAccount) error {
 
 	update := bson.M{
 		"$set": bson.M{
-			// "accountHolder": bankAccount.AccountHolder,
-			// "accountType":   bankAccount.AccountType,
 			"balance":       bankAccount.Balance,
 		},
 	}
